@@ -31,6 +31,8 @@ public:
 private:
   static axis_bits_t last_direction_bits;
   static xyz_long_t residual_error;
+  static xyz_float_t backlash_correction_mm;
+
 
   #if ENABLED(BACKLASH_GCODE)
     static uint8_t correction;

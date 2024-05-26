@@ -31,6 +31,8 @@
 
 axis_bits_t Backlash::last_direction_bits;
 xyz_long_t Backlash::residual_error{0};
+xyz_float_t Backlash::backlash_correction_mm;
+
 
 #ifdef BACKLASH_DISTANCE_MM
   #if ENABLED(BACKLASH_GCODE)
@@ -120,7 +122,11 @@ void Backlash::add_correction_steps(const int32_t &da, const int32_t &db, const 
 
       // This correction reduces the residual error and adds block steps
       if (error_correction) {
-        block->steps[axis] += ABS(error_correction);
+        const uint32_t abs_correction = ABS(error_correction);
+        block->steps[axis] += abs_correction;
+        backlash_correction_mm[axis] = abs_correction * planner.mm_per_step[axis];
+        block->millimeters += backlash_correction_mm[axis];
+
         #if ENABLED(CORE_BACKLASH)
           switch (axis) {
             case CORE_AXIS_1:
